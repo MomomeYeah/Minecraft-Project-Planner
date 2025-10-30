@@ -66,7 +66,9 @@ type PageProps = {
 export default async function Page(props: PageProps) {
     return (
         <>
-            <Search placeholder="Search items..." />
+            <Suspense fallback={null}>
+                <Search placeholder="Search items..." />
+            </Suspense>
             <Table className="mt-4">
                 <TableHeader>
                     <TableRow>
