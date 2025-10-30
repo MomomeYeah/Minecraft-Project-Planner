@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database Migrations
+
+[Drizzle Tutorial](https://orm.drizzle.team/docs/tutorials/drizzle-with-supabase)
+
+```bash
+npx drizzle-kit generate
+npx drizzle-kit migrate
+# or
+npx drizzle-kit push # for dev testing
+```
+
 ## Getting Started
 
 First, run the development server:

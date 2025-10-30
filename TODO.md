@@ -19,6 +19,7 @@
     - Tags
     - Crafting Recipes
     - Best ways to farm
+- Scrape item data from somewhere convenient
 
 # Social
 - Import photos of your builds
