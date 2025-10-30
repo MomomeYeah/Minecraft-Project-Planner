@@ -1,4 +1,4 @@
-import { seedItems } from '../lib/seed';
+import { seedItems } from '@/app/lib/seed';
 
 export default async function Page() {
     let seedMessage = "Data seeding complete";
