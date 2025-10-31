@@ -12,11 +12,16 @@ export async function createItem(formData: FormData) {
         item_id: formData.get("item-id"),
     });
 
-    await db.insert(Item).values({
-        name,
-        item_id,
-    });
- 
+    try {
+        await db.insert(Item).values({
+            name,
+            item_id,
+        });
+    } catch (error) {
+        console.error("Error creating item:", error);
+        throw error;
+    }
+    
     revalidatePath('/items');
     redirect('/items');
 }
@@ -27,14 +32,19 @@ export async function updateItem(id: string, formData: FormData) {
         item_id: formData.get("item-id"),
     });
 
-    await db
-        .update(Item)
-        .set({
-            name,
-            item_id,
-        })
-        .where(eq(Item.id, id));
- 
+    try {
+        await db
+            .update(Item)
+            .set({
+                name,
+                item_id,
+            })
+            .where(eq(Item.id, id));
+    } catch (error) {
+        console.error("Error updating item:", error);
+        throw error;
+    }
+    
     revalidatePath('/items');
     redirect('/items');
 }

@@ -38,7 +38,7 @@ export default function RootLayout({
                 >
                     <SidebarProvider>
                         <AppSidebar />
-                        <div className="grow p-6 md:overflow-y-auto md:p-12 border-2">
+                        <div className="flex flex-col grow p-6 md:overflow-y-auto md:p-12 border-2">
                             <SidebarTrigger />
                             <div className="grow mt-6">
                                 {children}

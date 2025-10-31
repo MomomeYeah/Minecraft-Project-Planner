@@ -1,6 +1,7 @@
 import { fetchItemById } from "@/app/lib/data";
 import Form from '@/app/ui/items/edit-form';
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -14,6 +15,10 @@ export default async function Page(props: { params: { id: string } }) {
     const params = await props.params;
     const itemId = params.id;
     const item = await fetchItemById(itemId);
+
+    if (! item) {
+        return notFound();
+    }
 
     return (
         <main>
