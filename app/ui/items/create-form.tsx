@@ -1,19 +1,43 @@
+"use client";
+
+import { useActionState } from "react"
+import { CircleAlert } from "lucide-react"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Field,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 import Link from "next/link";
-import { createItem } from "@/app/lib/actions";
+import { createItem, State } from "@/app/lib/actions";
 
 export default function Form() {
+    const initialState: State = { message: null, errors: {} };
+    const [state, formAction] = useActionState(createItem, initialState);
+
     return (
-        <form action={createItem}>
+        <>
+        {
+            state.message && 
+            <Alert variant="destructive" className="mb-6">
+                <CircleAlert />
+                <AlertTitle>{state.message}</AlertTitle>
+                <AlertDescription>
+                    <p>Please fill out all required fields.</p>
+                </AlertDescription>
+            </Alert>
+        }
+        <form action={formAction}>
             <FieldGroup>
-                <Field>
+                <Field data-invalid={!!state.errors?.name}>
                     <FieldLabel htmlFor="item-name">
                         Item Name
                     </FieldLabel>
@@ -21,10 +45,11 @@ export default function Form() {
                         id="item-name"
                         name="item-name"
                         placeholder="My Item"
-                        required
+                        aria-invalid={!!state.errors?.name}
                     />
+                    {state.errors?.name && <FieldError>{state.errors.name.join(", ")}</FieldError>}
                 </Field>
-                <Field>
+                <Field data-invalid={!!state.errors?.item_id}>
                     <FieldLabel htmlFor="item-id">
                         Item ID
                     </FieldLabel>
@@ -32,8 +57,9 @@ export default function Form() {
                         id="item-id"
                         name="item-id"
                         placeholder="minecraft:my_item"
-                        required
+                        aria-invalid={!!state.errors?.item_id}
                     />
+                    {state.errors?.item_id && <FieldError>{state.errors.item_id.join(", ")}</FieldError>}
                 </Field>
                 <Field orientation="horizontal">
                     <Button type="submit">Submit</Button>
@@ -43,5 +69,6 @@ export default function Form() {
                 </Field>
             </FieldGroup>
         </form>
+        </>
     );
 }

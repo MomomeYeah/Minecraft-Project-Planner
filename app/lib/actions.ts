@@ -6,11 +6,27 @@ import { eq } from "drizzle-orm";
 import { db } from "@/app/lib/db/drizzle";
 import { Item, SelectItemSchema } from "@/app/lib/db/schema/items";
 
-export async function createItem(formData: FormData) {
-    const { name, item_id } = SelectItemSchema.parse({
+export type State = {
+  errors?: {
+    name?: string[];
+    item_id?: string[];
+  };
+  message?: string | null;
+};
+
+export async function createItem(prevState: State, formData: FormData) {
+    const validatedFields = SelectItemSchema.safeParse({
         name: formData.get("item-name"),
         item_id: formData.get("item-id"),
     });
+
+    if (! validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Failed to create item.",
+        }   
+    }
+    const { name, item_id } = validatedFields.data;
 
     try {
         await db.insert(Item).values({
@@ -26,11 +42,19 @@ export async function createItem(formData: FormData) {
     redirect('/items');
 }
 
-export async function updateItem(id: string, formData: FormData) {
-    const { name, item_id } = SelectItemSchema.parse({
+export async function updateItem(id: string, prevState: State, formData: FormData) {
+    const validatedFields = SelectItemSchema.safeParse({
         name: formData.get("item-name"),
         item_id: formData.get("item-id"),
     });
+
+    if (! validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Failed to update item.",
+        }   
+    }
+    const { name, item_id } = validatedFields.data;
 
     try {
         await db
