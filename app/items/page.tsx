@@ -1,7 +1,11 @@
 import { Suspense } from "react";
-import Search from "@/app/ui/search";
+import { Pencil, Trash } from "lucide-react"
+import Link from "next/link";
 import { fetchAllItems, fetchAllItemsPages } from "@/app/lib/data";
-import { SearchPagination } from "../ui/pagination";
+import { deleteItem } from "@/app/lib/actions";
+import { SearchPagination } from "@/app/ui/pagination";
+import Search from "@/app/ui/search";
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
@@ -19,8 +23,18 @@ function PageSkeleton() {
         <TableBody>
             {iterator.map((index) => (
                 <TableRow key={index}>
-                    <TableCell className="font-medium"><Skeleton className="h-6 w-1/2 mb-2" /></TableCell>
-                    <TableCell className="text-right"><Skeleton className="h-6 w-1/2 mb-2 float-right" /></TableCell>
+                    <TableCell className="font-medium">
+                        <Skeleton className="h-6 w-1/2 mb-2" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <Skeleton className="h-6 w-1/2 mb-2 float-right" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <Skeleton className="h-6 w-1/2 mb-2 float-right" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <Skeleton className="h-6 w-1/2 mb-2 float-right" />
+                    </TableCell>
                 </TableRow>
             ))}
         </TableBody>
@@ -38,8 +52,18 @@ async function PageData(props: PageProps) {
         <TableBody>
             {items.map((item) => (
                 <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>{item.name}</TableCell>
                     <TableCell className="text-right">{item.item_id}</TableCell>
+                    <TableCell className="text-right">
+                        <Button variant="outline" size="sm">
+                            <Link href={`/items/${item.id}/edit`}><Pencil /></Link>
+                        </Button>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <form action={deleteItem.bind(null, item.id)}>
+                            <Button variant="outline" size="sm"><Trash /></Button>
+                        </form>
+                    </TableCell>
                 </TableRow>
             ))}
         </TableBody>
@@ -63,17 +87,24 @@ type PageProps = {
         page?: string;
     }>
 }
-export default async function Page(props: PageProps) {
+export default function Page(props: PageProps) {
     return (
         <>
             <Suspense fallback={null}>
-                <Search placeholder="Search items..." />
+                <div className="flex items-center">
+                    <Search placeholder="Search items..." />
+                    <Button>
+                        <Link href="/items/create">Create Item</Link>
+                    </Button>
+                </div>
             </Suspense>
             <Table className="mt-4">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead className="text-right">Item ID</TableHead>
+                        <TableHead className="text-right" />
+                        <TableHead className="text-right" />
                     </TableRow>
                 </TableHeader>
                 <Suspense fallback={<PageSkeleton />}>

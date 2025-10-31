@@ -1,5 +1,5 @@
-import { count, ilike } from "drizzle-orm";
-import { db } from "./db/drizzle";
+import { count, eq, ilike } from "drizzle-orm";
+import { db } from "@/app/lib/db/drizzle";
 import {
     Item,
     SelectItem,
@@ -33,6 +33,23 @@ export async function fetchAllItemsPages(query: string): Promise<number> {
         return Math.ceil(itemsCount[0].count / ITEMS_PER_PAGE);
     } catch (error) {
         console.error("Error fetching item count:", error);
+        throw error;
+    }
+}
+
+export async function fetchItemById(id: string): Promise<SelectItem> {
+    try {
+        const item = await db
+            .select()
+            .from(Item)
+            .where(
+                eq(Item.id, id)
+            )
+            .limit(1);
+
+        return item[0];
+    } catch (error) {
+        console.error("Error fetching item by ID:", error);
         throw error;
     }
 }
