@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Pencil, Trash } from "lucide-react"
+import type { Metadata } from "next";
 import Link from "next/link";
 import { fetchAllItems, fetchAllItemsPages } from "@/app/lib/data";
 import { deleteItem } from "@/app/lib/actions";
@@ -15,6 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+export const metadata: Metadata = {
+    title: "Items",
+};
 
 function PageSkeleton() {
     const iterator = Array.from({ length: 10 }, (_, i) => i);

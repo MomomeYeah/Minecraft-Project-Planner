@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+It uses [ShadCN](https://ui.shadcn.com/docs/components) and [Tailwind CSS](https://tailwindcss.com/) for styling, and [Lucide Icons](https://lucide.dev/icons/)
+
 ## Database Migrations
 
 [Drizzle Tutorial](https://orm.drizzle.team/docs/tutorials/drizzle-with-supabase)
