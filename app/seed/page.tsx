@@ -1,4 +1,4 @@
-import { seedItems } from '@/app/lib/seed';
+import { seedItems, seedUsers } from '@/app/lib/seed';
 
 export default async function Page() {
     const successMessage = <p className="text-green-500">
@@ -10,6 +10,7 @@ export default async function Page() {
 
     try {
         await seedItems();
+        await seedUsers();
         return successMessage; 
     } catch (error) {
         console.error("Error during data seeding:", error);

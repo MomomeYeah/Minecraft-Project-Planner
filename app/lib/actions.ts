@@ -6,6 +6,9 @@ import { eq } from "drizzle-orm";
 import { db } from "@/app/lib/db/drizzle";
 import { Item, SelectItemSchema } from "@/app/lib/db/schema/items";
 
+import { signIn } from "@/auth";
+import { AuthError } from 'next-auth';
+
 export type State = {
   errors?: {
     name?: string[];
@@ -13,6 +16,8 @@ export type State = {
   };
   message?: string | null;
 };
+
+/** Items */
 
 export async function createItem(prevState: State, formData: FormData) {
     const validatedFields = SelectItemSchema.safeParse({
@@ -79,4 +84,22 @@ export async function deleteItem(id: string) {
         .where(eq(Item.id, id));
  
     revalidatePath('/items');
+}
+
+/** Authentication */
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+    try {
+        await signIn('credentials', formData);
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case "CredentialsSignin":
+                    return "Invalid credentials";
+                default:
+                    return "Authentication error";
+            }
+        }
+
+        throw error;
+    }
 }

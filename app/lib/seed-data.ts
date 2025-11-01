@@ -42,3 +42,11 @@ export const items = [
     { name: "Diamond", item_id: "minecraft:diamond" },
     { name: "Coal", item_id: "minecraft:coal" },
 ];
+
+export const users = [
+    {
+        name: "admin",
+        email: "admin@example.com",
+        password: "password",
+    },
+];

@@ -25,3 +25,9 @@
 - Import photos of your builds
 - Allow commenting, friends lists, etc.
 - Build descriptions, what went well, what you're happy with, what to improve, etc.
+
+# General TODO Items
+- Need to hide sidebar when not logged in
+- Would be nice to show field-specific errors on login form
+- Signout button doesn't quite match the styles of the rest of the sidebar items
+- Make sure we're using ShadCN field components everywhere
