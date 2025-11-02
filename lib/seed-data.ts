@@ -1,3 +1,15 @@
+export const farm_categories = [
+    { category_name: "Creeper" },
+    { category_name: "Gold" },
+    { category_name: "Iron" },
+    { category_name: "Sugarcane" }
+];
+
+export const farms = [
+    { category: "Creeper", time_to_build_mins: 60, reference_url: "https://www.youtube.com/watch?v=Uv-zTGzFGcs" },
+    { category: "Iron", time_to_build_mins: 30, reference_url: "https://www.youtube.com/watch?v=-oYyJ6jfSPU" },
+];
+
 export const items = [
     { name: "Stone", item_id: "minecraft:stone" },
     { name: "Dirt", item_id: "minecraft:dirt" },

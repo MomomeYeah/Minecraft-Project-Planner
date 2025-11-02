@@ -14,6 +14,9 @@
 - Different variants, with links to YouTube build guides
 - Resulting items and rough quantities
 
+# Standard Components
+- Allow farms to include standard components like sorting systems with known component counts
+
 # Item Database
 - Item listings with properties
     - Tags

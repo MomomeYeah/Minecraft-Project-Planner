@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation";
 
 import clsx from "clsx";
-import { Home, Sprout, Tractor, Hammer, Cuboid } from "lucide-react"
+import { Home, Tractor, Hammer, Cuboid } from "lucide-react"
 import {
     SidebarMenuButton,
     SidebarMenuItem
@@ -18,11 +18,6 @@ export default function NavLinks() {
             title: "Home",
             url: "/",
             icon: Home,
-        },
-        {
-            title: "Seed",
-            url: "/seed",
-            icon: Sprout,
         },
         {
             title: "Builds",

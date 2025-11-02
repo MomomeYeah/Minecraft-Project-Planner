@@ -1,11 +1,11 @@
 import { uuid, text, pgTable } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod"
 
-export const Item = pgTable("items", {
+export const Item = pgTable("Items", {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     item_id: text("item_id").notNull(),
-});
+}).enableRLS();
 
 export type SelectItem = typeof Item.$inferSelect;
 
