@@ -6,8 +6,8 @@ export const farm_categories = [
 ];
 
 export const farms = [
-    { category: "Creeper", time_to_build_mins: 60, reference_url: "https://www.youtube.com/watch?v=Uv-zTGzFGcs" },
-    { category: "Iron", time_to_build_mins: 30, reference_url: "https://www.youtube.com/watch?v=-oYyJ6jfSPU" },
+    { category: "Creeper", name: "Cool Creeper Farm", time_to_build_mins: 60, reference_url: "https://www.youtube.com/watch?v=Uv-zTGzFGcs" },
+    { category: "Iron", name: "Easy Iron Farm", time_to_build_mins: 30, reference_url: "https://www.youtube.com/watch?v=-oYyJ6jfSPU" },
 ];
 
 export const items = [

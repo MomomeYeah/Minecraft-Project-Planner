@@ -8,6 +8,7 @@ ALTER TABLE "FarmCategories" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 CREATE TABLE "Farms" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"farm_category_id" uuid NOT NULL,
+	"name" text NOT NULL,
 	"time_to_build_mins" integer NOT NULL,
 	"automation_level" "automation_level" NOT NULL,
 	"reference_url" text

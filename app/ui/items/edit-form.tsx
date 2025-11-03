@@ -1,6 +1,12 @@
 "use client";
 
 import { useActionState } from "react"
+import { CircleAlert } from "lucide-react"
+import {
+    Alert,
+    AlertDescription,
+    AlertTitle,
+} from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -12,13 +18,24 @@ import { Input } from "@/components/ui/input"
 
 import Link from "next/link";
 import { SelectItem } from "@/app/lib/db/schema/items";
-import { updateItem, State } from "@/app/lib/actions";
+import { updateItem, ItemState } from "@/app/lib/actions";
 
 export default function Form({item}: {item: SelectItem}) {
-    const initialState: State = { message: null, errors: {} };
+    const initialState: ItemState = { message: null, errors: {} };
     const [state, formAction] = useActionState(updateItem.bind(null, item.id), initialState);
 
     return (
+        <>
+            {
+            state.message && 
+            <Alert variant="destructive" className="mb-6">
+                <CircleAlert />
+                <AlertTitle>{state.message}</AlertTitle>
+                <AlertDescription>
+                    <p>Please fill out all required fields.</p>
+                </AlertDescription>
+            </Alert>
+        }
         <form action={formAction}>
             <FieldGroup>
                 <Field data-invalid={!!state.errors?.name}>
@@ -49,11 +66,12 @@ export default function Form({item}: {item: SelectItem}) {
                 </Field>
                 <Field orientation="horizontal">
                     <Button type="submit">Submit</Button>
-                    <Button variant="outline" type="button">
+                    <Button variant="outline" type="button" asChild>
                         <Link href="/items">Cancel</Link>
                     </Button>
                 </Field>
             </FieldGroup>
         </form>
+        </>
     );
 }

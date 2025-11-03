@@ -9,12 +9,12 @@ import Search from "@/app/ui/search";
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
 
 export const metadata: Metadata = {
@@ -28,17 +28,14 @@ function PageSkeleton() {
         <TableBody>
             {iterator.map((index) => (
                 <TableRow key={index}>
-                    <TableCell className="font-medium">
-                        <Skeleton className="h-6 w-1/2 mb-2" />
+                    <TableCell>
+                        <Skeleton className="h-6 w-1/2 my-1" />
                     </TableCell>
-                    <TableCell className="text-right">
-                        <Skeleton className="h-6 w-1/2 mb-2 float-right" />
+                    <TableCell className="w-8">
+                        <Skeleton className="h-6 w-6 my-1 float-right" />
                     </TableCell>
-                    <TableCell className="text-right">
-                        <Skeleton className="h-6 w-1/2 mb-2 float-right" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                        <Skeleton className="h-6 w-1/2 mb-2 float-right" />
+                    <TableCell className="w-8">
+                        <Skeleton className="h-6 w-6 my-1 float-right" />
                     </TableCell>
                 </TableRow>
             ))}
@@ -58,15 +55,14 @@ async function PageData(props: PageProps) {
             {items.map((item) => (
                 <TableRow key={item.id}>
                     <TableCell>{item.name}</TableCell>
-                    <TableCell className="text-right">{item.item_id}</TableCell>
-                    <TableCell className="text-right">
-                        <Button variant="outline" size="sm">
+                    <TableCell className="text-right w-14">
+                        <Button variant="outline" size="icon" asChild>
                             <Link href={`/items/${item.id}/edit`}><Pencil /></Link>
                         </Button>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right w-14">
                         <form action={deleteItem.bind(null, item.id)}>
-                            <Button variant="outline" size="sm"><Trash /></Button>
+                            <Button variant="outline" size="icon" className="cursor-pointer"><Trash /></Button>
                         </form>
                     </TableCell>
                 </TableRow>
@@ -98,7 +94,7 @@ export default function Page(props: PageProps) {
             <Suspense fallback={null}>
                 <div className="flex items-center">
                     <Search placeholder="Search items..." />
-                    <Button>
+                    <Button asChild>
                         <Link href="/items/create">Create Item</Link>
                     </Button>
                 </div>
@@ -107,9 +103,8 @@ export default function Page(props: PageProps) {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
-                        <TableHead className="text-right">Item ID</TableHead>
-                        <TableHead className="text-right" />
-                        <TableHead className="text-right" />
+                        <TableHead />
+                        <TableHead />
                     </TableRow>
                 </TableHeader>
                 <Suspense fallback={<PageSkeleton />}>

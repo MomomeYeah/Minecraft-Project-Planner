@@ -40,6 +40,7 @@ async function seedFarms() {
         // as opposed to getting them from `farm`
         await db.insert(Farm).values({
             farm_category_id: farmCategoryId,
+            name: farm.name,
             time_to_build_mins: farm.time_to_build_mins,
             automation_level: "Automatic",
             reference_url: farm.reference_url,

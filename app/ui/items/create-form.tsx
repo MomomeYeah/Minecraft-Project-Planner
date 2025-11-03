@@ -3,24 +3,24 @@
 import { useActionState } from "react"
 import { CircleAlert } from "lucide-react"
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
+    Alert,
+    AlertDescription,
+    AlertTitle,
 } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 import Link from "next/link";
-import { createItem, State } from "@/app/lib/actions";
+import { createItem, ItemState } from "@/app/lib/actions";
 
 export default function Form() {
-    const initialState: State = { message: null, errors: {} };
+    const initialState: ItemState = { message: null, errors: {} };
     const [state, formAction] = useActionState(createItem, initialState);
 
     return (
@@ -62,8 +62,8 @@ export default function Form() {
                     {state.errors?.item_id && <FieldError>{state.errors.item_id.join(", ")}</FieldError>}
                 </Field>
                 <Field orientation="horizontal">
-                    <Button type="submit">Submit</Button>
-                    <Button variant="outline" type="button">
+                    <Button type="submit" className="cursor-pointer">Submit</Button>
+                    <Button variant="outline" type="button" asChild>
                         <Link href="/items">Cancel</Link>
                     </Button>
                 </Field>

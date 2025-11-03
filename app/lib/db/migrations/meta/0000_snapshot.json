@@ -1,5 +1,5 @@
 {
-  "id": "42aee679-0547-4f2f-bc79-a71e6385aa5f",
+  "id": "f37b8795-f3b4-4395-85f0-54bef7cd1b08",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -44,6 +44,12 @@
         "farm_category_id": {
           "name": "farm_category_id",
           "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },

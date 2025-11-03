@@ -30,7 +30,10 @@
 - Build descriptions, what went well, what you're happy with, what to improve, etc.
 
 # General TODO Items
-- Need to hide sidebar when not logged in
+- Forms should retain entered data on validation error
 - Would be nice to show field-specific errors on login form
-- Signout button doesn't quite match the styles of the rest of the sidebar items
-- Make sure we're using ShadCN field components everywhere
+- Make sure ShadCN field components are being used everywhere
+- SideBar
+    - Hide when not logged in
+    - Signout button doesn't match the styles of the rest of the sidebar items
+    - Entire width of Signout should be clickable
