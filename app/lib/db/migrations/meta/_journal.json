@@ -8,6 +8,13 @@
       "when": 1762083270984,
       "tag": "0000_chief_mentallo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1762149427393,
+      "tag": "0001_typical_vulcan",
+      "breakpoints": true
     }
   ]
 }

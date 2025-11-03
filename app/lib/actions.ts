@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/app/lib/db/drizzle";
 import { Item, SelectItemSchema } from "@/app/lib/db/schema/items";
 import { Farm, SelectFarmSchema } from "@/app/lib/db/schema/farms";
+import { Build, SelectBuildSchema } from "@/app/lib/db/schema/builds";
 
 import { signIn } from "@/auth";
 import { AuthError } from 'next-auth';
@@ -180,4 +181,72 @@ export async function deleteFarm(id: string) {
         .where(eq(Farm.id, id));
  
     revalidatePath('/items');
+}
+
+/** Builds */
+
+export type BuildState = {
+  errors?: {
+    name?: string[];
+    description?: string[];
+  };
+  message?: string | null;
+};
+export async function createBuild(prevState: BuildState, formData: FormData) {
+    const validatedFields = SelectBuildSchema.safeParse({
+        name: formData.get("name"),
+        description: formData.get("description"),
+    });
+
+    if (! validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Failed to create build.",
+        }   
+    }
+    
+    try {
+        await db.insert(Build).values(validatedFields.data);
+    } catch (error) {
+        console.error("Error creating build:", error);
+        throw error;
+    }
+    
+    revalidatePath('/builds');
+    redirect('/builds');
+}
+
+export async function updateBuild(id: string, prevState: BuildState, formData: FormData) {
+    const validatedFields = SelectBuildSchema.safeParse({
+        name: formData.get("name"),
+        description: formData.get("description"),
+    });
+
+    if (! validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Failed to update build.",
+        }   
+    }
+
+    try {
+        await db
+            .update(Build)
+            .set(validatedFields.data)
+            .where(eq(Build.id, id));
+    } catch (error) {
+        console.error("Error updating build:", error);
+        throw error;
+    }
+    
+    revalidatePath('/builds');
+    redirect('/builds');
+}
+
+export async function deleteBuild(id: string) {
+    await db
+        .delete(Build)
+        .where(eq(Build.id, id));
+ 
+    revalidatePath('/builds');
 }

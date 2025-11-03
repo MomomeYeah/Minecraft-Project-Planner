@@ -12,6 +12,10 @@ import {
     Farm,
     SelectFarm
 } from "./db/schema/farms";
+import {
+    Build,
+    SelectBuild
+} from "./db/schema/builds";
 
 const PAGE_SIZE = 20;
 
@@ -113,6 +117,37 @@ export async function fetchFarmById(id: string): Promise<SelectFullFarm> {
         return farm[0];
     } catch (error) {
         console.error("Error fetching farm by ID:", error);
+        throw error;
+    }
+}
+
+/** Builds */
+
+export async function fetchAllBuilds(): Promise<SelectBuild[]> {
+    try {
+        return await db
+            .select()
+            .from(Build)
+            .orderBy(Build.name);
+    } catch (error) {
+        console.error("Error fetching builds:", error);
+        throw error;
+    }
+}
+
+export async function fetchBuildById(id: string): Promise<SelectBuild> {
+    try {
+        const build = await db
+            .select()
+            .from(Build)
+            .where(
+                eq(Build.id, id)
+            )
+            .limit(1);
+
+        return build[0];
+    } catch (error) {
+        console.error("Error fetching build by ID:", error);
         throw error;
     }
 }

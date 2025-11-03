@@ -1,3 +1,9 @@
+export const builds = [
+    { name: "Cool Build 1", description: "This is a very cool build that I'm making, the first of two very cool ones" },
+    { name: "Average Build", description: "This is another build I'm making, it's OK but nothing special" },
+    { name: "Cool Build 2", description: "This is another very cool build that I'm making, the second of two" },
+];
+
 export const farm_categories = [
     { category_name: "Creeper" },
     { category_name: "Gold" },

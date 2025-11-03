@@ -1,19 +1,26 @@
 import bcrypt from 'bcrypt';
 import { eq, sql } from 'drizzle-orm';
-import { farm_categories, farms, items, users } from './seed-data';
+import { builds, farm_categories, farms, items, users } from './seed-data';
 import { db } from "../app/lib/db/drizzle";
+import { Build } from "../app/lib/db/schema/builds";
 import { FarmCategory } from "../app/lib/db/schema/farm-categories";
 import { Farm, FarmDrops, FarmAutomationLevel } from "../app/lib/db/schema/farms";
 import { Item } from "../app/lib/db/schema/items";
 import { User } from "../app/lib/db/schema/users";
 
 async function dropDatabase() {
+    await db.execute(sql`DROP TABLE IF EXISTS ${Build} CASCADE`);
     await db.execute(sql`DROP TABLE IF EXISTS ${FarmCategory} CASCADE`);
     await db.execute(sql`DROP TABLE IF EXISTS ${Farm} CASCADE`);
     await db.execute(sql`DROP TABLE IF EXISTS ${FarmDrops} CASCADE`);
     await db.execute(sql`DROP TABLE IF EXISTS ${Item} CASCADE`);
     await db.execute(sql`DROP TABLE IF EXISTS ${User} CASCADE`);
     await db.execute(sql`DROP TYPE IF EXISTS ${FarmAutomationLevel}`);
+}
+
+async function seedBuilds() {
+    await db.execute(sql`TRUNCATE TABLE ${Build} CASCADE`);
+    await db.insert(Build).values(builds).onConflictDoNothing();
 }
 
 async function seedFarmCategories() {
@@ -75,6 +82,8 @@ try {
     // await dropDatabase();
     // console.log("All tables dropped");
 
+    await seedBuilds();
+    console.log("Builds seeded successfully.");
     await seedFarmCategories();
     console.log("Farm categories seeded successfully.");
     await seedFarms();

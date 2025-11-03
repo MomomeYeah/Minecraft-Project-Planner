@@ -30,9 +30,12 @@
 - Build descriptions, what went well, what you're happy with, what to improve, etc.
 
 # General TODO Items
-- Forms should retain entered data on validation error
-- Would be nice to show field-specific errors on login form
 - Make sure ShadCN field components are being used everywhere
+- Make sure table contents wrap appropriately
+- Forms
+    - Required fields should have indicators
+    - Forms should retain entered data on validation error
+    - Would be nice to show field-specific errors on login form
 - SideBar
     - Hide when not logged in
     - Signout button doesn't match the styles of the rest of the sidebar items
