@@ -13,6 +13,6 @@ export default function LoginPage() {
             <Suspense>
                 <LoginForm />
             </Suspense>
-    </main>
+        </main>
   );
 }

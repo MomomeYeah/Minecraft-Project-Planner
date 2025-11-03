@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AppSidebar from "@/app/ui/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import PageToggles from "./ui/page-toggles";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -42,8 +43,8 @@ export default function RootLayout({
                     <SidebarProvider>
                         <AppSidebar />
                         <div className="flex flex-col grow p-6 md:overflow-y-auto md:p-12 border-2">
-                            <SidebarTrigger />
                             <div className="grow mt-6">
+                                <PageToggles />
                                 {children}
                             </div>
                         </div>
