@@ -151,7 +151,8 @@ export default function Form(props: FormProps) {
                                 </DialogHeader>
                                 <ItemTable
                                     checked={items}
-                                    handleItemToggled={handleItemToggled} />
+                                    handleItemToggled={handleItemToggled}
+                                />
                                 <DialogFooter>
                                     <DialogClose asChild>
                                         <Button>Close</Button>

@@ -1,9 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { SelectItem } from "@/app/lib/db/schema/items";
 import { fetchAllItems } from "@/app/lib/actions";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Field, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
     Table,
@@ -63,17 +67,6 @@ function ItemTableData(props: ItemTableDataProps) {
     );
 }
 
-// async function ItemTablePagination(props: ItemTableProps) {
-//     const searchParams = await props.searchParams;
-//     const currentPage = Number(searchParams?.page) || 1;
-//     const query = searchParams?.query || "";
-//     const totalPages = await fetchAllItemsPages(query);
-
-//     return (
-//         <SearchPagination currentPage={currentPage} totalPages={totalPages} />
-//     );
-// }
-
 type ItemTableProps = {
     checked: Array<BuildRequirementFields>,
     handleItemToggled: (item_id: string, item_name: string, checked: boolean) => void,
@@ -81,41 +74,52 @@ type ItemTableProps = {
 export default function ItemTable(props: ItemTableProps) {
     const [loading, setLoading] = useState(true);
     const [items, setItems] = useState<Array<SelectItem>>([]);
+    const [filteredItems, setFilteredItems] = useState<Array<SelectItem>>([]);
+
     useEffect(() => {
         async function getData() {
             setLoading(true);
 
-            const fetchedData = await fetchAllItems("", 1);
+            const fetchedData = await fetchAllItems();
             setItems(fetchedData);
+            setFilteredItems(fetchedData);
             setLoading(false);
         }
         getData();
     }, []);
 
+    const handleSearch = useDebouncedCallback((term: string) => {
+        const newFilteredItems = items.filter((item) => item.name.toLowerCase().match(term.toLowerCase()));
+        setFilteredItems(newFilteredItems);
+    }, 300);
+    
     return (
         <>
-            <Table className="mt-4">
-                <TableHeader>
-                    <TableRow>
-                        <TableHead />
-                        <TableHead>Name</TableHead>
-                    </TableRow>
-                </TableHeader>
-                {
-                    loading ?
-                    <ItemTableSkeleton /> :
-                    <ItemTableData {...props} items={items} />
-                }
-
-                {/* <Suspense fallback={<ItemTableSkeleton {...props} />}>
-                    <ItemTableData {...props} />
-                </Suspense> */}
-            </Table>
-            {/* <div className="mt-5 flex w-full justify-center">
-                <Suspense fallback={null}>
-                    <ItemTablePagination {...props} />
-                </Suspense>
-            </div> */}
+            <Field>
+                <FieldLabel htmlFor="name" className="sr-only">Search</FieldLabel>
+                <Input
+                    id="name"
+                    name="name"
+                    placeholder="Search Items"
+                    autoComplete="off"
+                    onChange={(e) => handleSearch(e.target.value)}
+                />
+            </Field>
+            <ScrollArea className="h-144 pr-4">
+                <Table className="mt-4">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead />
+                            <TableHead>Name</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    {
+                        loading ?
+                        <ItemTableSkeleton /> :
+                        <ItemTableData {...props} items={filteredItems} />
+                    }
+                </Table>
+            </ScrollArea>
         </>
     )
 }

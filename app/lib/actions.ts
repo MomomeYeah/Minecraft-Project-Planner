@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { eq, ilike } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/app/lib/db/drizzle";
 import { Item, SelectItem, SelectItemSchema } from "@/app/lib/db/schema/items";
 import { Farm, SelectFarmSchema } from "@/app/lib/db/schema/farms";
@@ -14,14 +14,12 @@ import { z } from 'zod';
 
 /** Items */
 
-export async function fetchAllItems(query: string, currentPage: number): Promise<SelectItem[]> {
+export async function fetchAllItems(): Promise<SelectItem[]> {
     try {
         return await db
             .select()
             .from(Item)
-            .where(ilike(Item.name, `%${query}%`))
-            .orderBy(Item.name)
-            .limit(10);
+            .orderBy(Item.name);
     } catch (error) {
         console.error("Error fetching items:", error);
         throw error;
