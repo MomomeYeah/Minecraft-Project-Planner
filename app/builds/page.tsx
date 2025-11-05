@@ -77,9 +77,6 @@ async function BuildData() {
 export default async function Page() {
     return (
         <>
-            <Button asChild>
-                <Link href="/builds/create">Create Build</Link>
-            </Button>
             <Table className="mt-4">
                 <TableHeader>
                     <TableRow>

@@ -92,12 +92,7 @@ export default function Page(props: PageProps) {
     return (
         <>
             <Suspense fallback={null}>
-                <div className="flex items-center">
-                    <Search placeholder="Search items..." />
-                    <Button asChild>
-                        <Link href="/items/create">Create Item</Link>
-                    </Button>
-                </div>
+                <Search placeholder="Search items..." />
             </Suspense>
             <Table className="mt-4">
                 <TableHeader>

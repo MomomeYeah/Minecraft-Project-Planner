@@ -2,16 +2,31 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { db } from "@/app/lib/db/drizzle";
-import { Item, SelectItemSchema } from "@/app/lib/db/schema/items";
+import { Item, SelectItem, SelectItemSchema } from "@/app/lib/db/schema/items";
 import { Farm, SelectFarmSchema } from "@/app/lib/db/schema/farms";
-import { Build, SelectBuildSchema } from "@/app/lib/db/schema/builds";
+import { Build, BuildRequirements, SelectBuildSchema } from "@/app/lib/db/schema/builds";
 
 import { signIn } from "@/auth";
 import { AuthError } from 'next-auth';
+import { z } from 'zod';
 
 /** Items */
+
+export async function fetchAllItems(query: string, currentPage: number): Promise<SelectItem[]> {
+    try {
+        return await db
+            .select()
+            .from(Item)
+            .where(ilike(Item.name, `%${query}%`))
+            .orderBy(Item.name)
+            .limit(10);
+    } catch (error) {
+        console.error("Error fetching items:", error);
+        throw error;
+    }
+}
 
 export type ItemState = {
   errors?: {
@@ -185,28 +200,70 @@ export async function deleteFarm(id: string) {
 
 /** Builds */
 
-export type BuildState = {
-  errors?: {
-    name?: string[];
-    description?: string[];
-  };
-  message?: string | null;
+type ZodTreeifiedError = {
+  errors: string[]; // Array of error messages at the current path
+  properties?: { [key: string]: ZodTreeifiedError }; // For object schemas
+  items?: ZodTreeifiedError[]; // For array schemas
 };
+
+export type BuildRequirementFields = {
+    build_id?: FormDataEntryValue | null,
+    item_id: FormDataEntryValue,
+    item_name: FormDataEntryValue,
+    quantity?: FormDataEntryValue | number | null,
+    quantity_type?: FormDataEntryValue | null,
+}
+export type BuildFields = {
+    name?: FormDataEntryValue | null;
+    description?: FormDataEntryValue | null;
+    requirements: Array<BuildRequirementFields>;
+}
+export type BuildState = {
+    fields: BuildFields,
+    errors?: ZodTreeifiedError,
+    message?: string | null;
+}
 export async function createBuild(prevState: BuildState, formData: FormData) {
-    const validatedFields = SelectBuildSchema.safeParse({
+    const item_quantities = formData.getAll("item_quantity");
+    const item_names = formData.getAll("item_name");
+    const item_quantity_types = formData.getAll("item_quantity_type");
+    const items = formData.getAll("item_id").map((item_id, index) => ({
+        item_id: item_id,
+        item_name: item_names[index],
+        quantity: item_quantities[index],
+        quantity_type: item_quantity_types[index],
+    }));
+
+    const fields = {
         name: formData.get("name"),
         description: formData.get("description"),
-    });
+        requirements: items,
+    }
+    const validatedFields = SelectBuildSchema.safeParse(fields);
 
     if (! validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
+            fields: fields,
+            errors: z.treeifyError(validatedFields.error),
             message: "Failed to create build.",
         }   
     }
     
     try {
-        await db.insert(Build).values(validatedFields.data);
+        await db.transaction(async (tx) => {
+            const newBuild = await tx.insert(Build).values(validatedFields.data).returning();
+
+            for (let i = 0; i < items.length; i++) {
+                const buildRequirement = {
+                    build_id: newBuild[0].id,
+                    ...validatedFields.data.requirements[i],
+                }
+
+                await tx
+                    .insert(BuildRequirements)
+                    .values(buildRequirement);
+            }
+        })
     } catch (error) {
         console.error("Error creating build:", error);
         throw error;
@@ -217,23 +274,53 @@ export async function createBuild(prevState: BuildState, formData: FormData) {
 }
 
 export async function updateBuild(id: string, prevState: BuildState, formData: FormData) {
-    const validatedFields = SelectBuildSchema.safeParse({
+    const item_quantities = formData.getAll("item_quantity");
+    const item_names = formData.getAll("item_name");
+    const item_quantity_types = formData.getAll("item_quantity_type");
+    const items = formData.getAll("item_id").map((item_id, index) => ({
+        item_id: item_id,
+        item_name: item_names[index],
+        quantity: item_quantities[index],
+        quantity_type: item_quantity_types[index],
+    }));
+
+    const fields = {
         name: formData.get("name"),
         description: formData.get("description"),
-    });
+        requirements: items,
+    }
+    const validatedFields = SelectBuildSchema.safeParse(fields);
 
     if (! validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
+            fields: fields,
+            errors: z.treeifyError(validatedFields.error),
             message: "Failed to update build.",
         }   
     }
 
     try {
-        await db
-            .update(Build)
-            .set(validatedFields.data)
-            .where(eq(Build.id, id));
+        await db.transaction(async (tx) => {
+            await tx
+                .update(Build)
+                .set(validatedFields.data)
+                .where(eq(Build.id, id));
+
+            await tx
+                .delete(BuildRequirements)
+                .where(eq(BuildRequirements.build_id, id));
+
+            for (let i = 0; i < items.length; i++) {
+                const buildRequirement = {
+                    build_id: id,
+                    ...validatedFields.data.requirements[i],
+                }
+
+                await tx
+                    .insert(BuildRequirements)
+                    .values(buildRequirement);
+            }
+        });
     } catch (error) {
         console.error("Error updating build:", error);
         throw error;
@@ -244,9 +331,15 @@ export async function updateBuild(id: string, prevState: BuildState, formData: F
 }
 
 export async function deleteBuild(id: string) {
-    await db
-        .delete(Build)
-        .where(eq(Build.id, id));
- 
+    await db.transaction(async (tx) => {
+        await tx
+            .delete(BuildRequirements)
+            .where(eq(BuildRequirements.build_id, id));
+
+        await tx
+            .delete(Build)
+            .where(eq(Build.id, id));
+    });
+
     revalidatePath('/builds');
 }

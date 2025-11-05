@@ -14,7 +14,8 @@ import {
 } from "./db/schema/farms";
 import {
     Build,
-    SelectBuild
+    BuildRequirements,
+    SelectBuild,
 } from "./db/schema/builds";
 
 const PAGE_SIZE = 20;
@@ -137,7 +138,7 @@ export async function fetchAllBuilds(): Promise<SelectBuild[]> {
 
 export async function fetchBuildById(id: string): Promise<SelectBuild> {
     try {
-        const build = await db
+        const buildList = await db
             .select()
             .from(Build)
             .where(
@@ -145,7 +146,22 @@ export async function fetchBuildById(id: string): Promise<SelectBuild> {
             )
             .limit(1);
 
-        return build[0];
+        const build = buildList[0];
+
+        const buildRequirements = await db
+            .select({
+                ...getTableColumns(BuildRequirements),
+                item_name: Item.name,
+            })
+            .from(BuildRequirements)
+            .innerJoin(Item, eq(Item.id, BuildRequirements.item_id))
+            .where(eq(BuildRequirements.build_id, id))
+            .orderBy(Item.name);
+
+        return {
+            ...build,
+            requirements: buildRequirements
+        };
     } catch (error) {
         console.error("Error fetching build by ID:", error);
         throw error;

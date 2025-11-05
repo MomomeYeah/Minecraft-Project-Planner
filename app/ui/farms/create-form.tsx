@@ -62,11 +62,11 @@ export default function Form({farmCategories}: {farmCategories: Array<SelectFarm
                     <FieldLabel htmlFor="farm-category-id">
                         Category
                     </FieldLabel>
-                    <Select
-                        name="farm-category-id"
-                        aria-invalid={!!state.errors?.farm_category_id}
-                    >
-                        <SelectTrigger>
+                    <Select name="farm-category-id">
+                        <SelectTrigger
+                            id="farm-category-id"
+                            aria-invalid={!!state.errors?.farm_category_id}
+                        >
                             <SelectValue placeholder="Category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -94,11 +94,11 @@ export default function Form({farmCategories}: {farmCategories: Array<SelectFarm
                     <FieldLabel htmlFor="automation-level">
                         Automation Level
                     </FieldLabel>
-                    <Select
-                        name="automation-level"
-                        aria-invalid={!!state.errors?.automation_level}
-                    >
-                        <SelectTrigger>
+                    <Select name="automation-level">
+                        <SelectTrigger
+                            id="automation-level"
+                            aria-invalid={!!state.errors?.automation_level}
+                        >
                             <SelectValue placeholder="Automation Level" />
                         </SelectTrigger>
                         <SelectContent>

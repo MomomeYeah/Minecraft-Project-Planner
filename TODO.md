@@ -14,6 +14,8 @@
 - Different variants, with links to YouTube build guides
 - Resulting items and rough quantities
 
+# Items in Stock
+
 # Standard Components
 - Allow farms to include standard components like sorting systems with known component counts
 
@@ -28,6 +30,10 @@
 - Import photos of your builds
 - Allow commenting, friends lists, etc.
 - Build descriptions, what went well, what you're happy with, what to improve, etc.
+
+# Builds
+- Show all possible items in the popup dialog, and allow searching to narrow list
+- Is there a way to define return types for build create / update without needing to specify every field?
 
 # General TODO Items
 - Make sure ShadCN field components are being used everywhere

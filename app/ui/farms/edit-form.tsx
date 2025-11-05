@@ -66,10 +66,9 @@ export default function Form({farm, farmCategories}: {farm: SelectFarm, farmCate
                         </FieldLabel>
                         <Select
                             name="farm-category-id"
-                            aria-invalid={!!state.errors?.farm_category_id}
                             defaultValue={farm.farm_category_id}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger id="farm-category-id" aria-invalid={!!state.errors?.farm_category_id}>
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -100,10 +99,9 @@ export default function Form({farm, farmCategories}: {farm: SelectFarm, farmCate
                         </FieldLabel>
                         <Select
                             name="automation-level"
-                            aria-invalid={!!state.errors?.automation_level}
                             defaultValue={farm.automation_level}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger id="automation-level" aria-invalid={!!state.errors?.automation_level}>
                                 <SelectValue placeholder="Automation Level" />
                             </SelectTrigger>
                             <SelectContent>

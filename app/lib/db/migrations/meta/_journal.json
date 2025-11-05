@@ -15,6 +15,13 @@
       "when": 1762149427393,
       "tag": "0001_typical_vulcan",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762236093115,
+      "tag": "0002_known_lionheart",
+      "breakpoints": true
     }
   ]
 }
