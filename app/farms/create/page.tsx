@@ -1,4 +1,6 @@
+import { Suspense } from 'react';
 import Form from '@/app/ui/farms/create-form';
+import { FormSkeleton } from '@/app/ui/farms/base-form';
 import { fetchAllFarmCategories } from "@/app/lib/data";
 import Link from "next/link";
 import {
@@ -11,7 +13,7 @@ import {
 } from "@/components/ui/breadcrumb"
  
 export default async function Page() {
-    const farmCategories = await fetchAllFarmCategories();
+    const farmCategories = fetchAllFarmCategories();
 
     return (
         <main>
@@ -34,7 +36,9 @@ export default async function Page() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <Form farmCategories={farmCategories} />
+            <Suspense fallback={<FormSkeleton />}>
+                <Form farmCategoriesPromise={farmCategories} />
+            </Suspense>
         </main>
     );
 }

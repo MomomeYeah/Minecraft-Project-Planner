@@ -1,11 +1,15 @@
 "use client";
 
+import { use } from "react";
 import { SelectFarm } from "@/app/lib/db/schema/farms";
 import { SelectFarmCategory } from "@/app/lib/db/schema/farm-categories";
 import { updateFarm, FarmState } from "@/app/lib/actions";
 import BaseForm from "./base-form"
 
-export default function Form({farm, farmCategories}: {farm: SelectFarm, farmCategories: Array<SelectFarmCategory>}) {
+export default function Form({farmPromise, farmCategoriesPromise}: {farmPromise: Promise<SelectFarm>, farmCategoriesPromise: Promise<Array<SelectFarmCategory>>}) {
+    const farm = use(farmPromise);
+    const farmCategories = use(farmCategoriesPromise);
+    
     const initialState: FarmState = {fields: {
         name: farm.name,
         farm_category_id: farm.farm_category_id,

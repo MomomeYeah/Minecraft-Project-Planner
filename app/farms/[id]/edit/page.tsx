@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { fetchFarmById, fetchAllFarmCategories } from "@/app/lib/data";
+import { FormSkeleton } from '@/app/ui/farms/base-form';
 import Form from '@/app/ui/farms/edit-form';
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,13 +16,13 @@ import {
 export default async function Page(props: { params: { id: string } }) {
     const params = await props.params;
     const farmId = params.id;
-    const farm = await fetchFarmById(farmId);
+    const farm = fetchFarmById(farmId);
 
     if (! farm) {
         return notFound();
     }
 
-    const farmCategories = await fetchAllFarmCategories();
+    const farmCategories = fetchAllFarmCategories();
 
     return (
         <main>
@@ -43,7 +45,9 @@ export default async function Page(props: { params: { id: string } }) {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <Form farm={farm} farmCategories={farmCategories} />
+            <Suspense fallback={<FormSkeleton />}>
+                <Form farmPromise={farm} farmCategoriesPromise={farmCategories} />
+            </Suspense>
         </main>
     );
 }

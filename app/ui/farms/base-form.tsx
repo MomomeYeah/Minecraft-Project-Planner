@@ -38,10 +38,26 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { FarmState, FarmItemFields } from "@/app/lib/actions";
 import { SelectFarmCategory } from "@/app/lib/db/schema/farm-categories";
 import ItemTable from "@/app/ui/items/table";
+
+export function FormSkeleton() {
+    return (
+        <>
+            <Skeleton className="h-4 w-1/6 px-3 py-1 mb-1" />
+            <Skeleton className="h-9 w-full px-3 py-1 mb-4" />
+            
+            <Skeleton className="h-4 w-1/6 px-3 py-1 mb-1" />
+            <Skeleton className="h-9 w-full px-3 py-1 mb-4" />
+            
+            <Skeleton className="h-4 w-1/6 px-3 py-1 mb-1" />
+            <Skeleton className="h-9 w-full px-3 py-1 mb-4" />
+        </>
+    );
+}
 
 type FormProps = {
     farmCategories: Array<SelectFarmCategory>,
