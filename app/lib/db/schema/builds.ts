@@ -3,7 +3,7 @@ import { createSelectSchema } from "drizzle-zod"
 import { Item, ItemQuantityType } from "./items";
 import { z } from 'zod';
 
-/** Table definition for a build requirement - one-to-many between Builds and Items, with associated quantities */
+/** Table definition for a build requirements - one-to-many between Builds and Items, with associated quantities */
 export const BuildRequirements = pgTable("BuildRequirements", {
     build_id: uuid().references(() => Build.id).notNull(),
     item_id: uuid().references(() => Item.id).notNull(),
@@ -32,7 +32,7 @@ export type SelectBuild = typeof Build.$inferSelect & { "requirements"?: Array<S
 /** Validation schema for builds, including an array of associated requirements */
 export const SelectBuildSchema = createSelectSchema(Build, {
     name: (schema) => schema.min(1, {message: "Must be between 1 and 100 characters"}).max(100, {message: "Must be between 1 and 100 characters"}),
-    description: (schema) => schema.min(1, {message: "Must be between 1 and 255 characters"}).max(255, {message: "Must be between 1 and 100 characters"}),
+    description: (schema) => schema.min(1, {message: "Must be between 1 and 255 characters"}).max(255, {message: "Must be between 1 and 255 characters"}),
 }).omit({id: true}).extend({
     requirements: z.array(SelectBuildRequirementsSchema.omit({build_id: true}))
 });

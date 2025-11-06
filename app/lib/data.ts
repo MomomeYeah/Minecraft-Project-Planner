@@ -10,7 +10,9 @@ import {
 } from "./db/schema/farm-categories";
 import {
     Farm,
-    SelectFarm
+    SelectFarm,
+    FarmRequirements,
+    FarmOutputs
 } from "./db/schema/farms";
 import {
     Build,
@@ -103,7 +105,7 @@ export async function fetchAllFarms(): Promise<SelectFullFarm[]> {
 
 export async function fetchFarmById(id: string): Promise<SelectFullFarm> {
     try {
-        const farm = await db
+        const farmList = await db
             .select({
                 ...getTableColumns(Farm),
                 category_name: FarmCategory.category_name,
@@ -115,7 +117,33 @@ export async function fetchFarmById(id: string): Promise<SelectFullFarm> {
             )
             .limit(1);
 
-        return farm[0];
+        const farm = farmList[0];
+
+        const farmRequirements = await db
+            .select({
+                ...getTableColumns(FarmRequirements),
+                item_name: Item.name,
+            })
+            .from(FarmRequirements)
+            .innerJoin(Item, eq(Item.id, FarmRequirements.item_id))
+            .where(eq(FarmRequirements.farm_id, id))
+            .orderBy(Item.name);
+
+        const farmOutputs = await db
+            .select({
+                ...getTableColumns(FarmOutputs),
+                item_name: Item.name,
+            })
+            .from(FarmOutputs)
+            .innerJoin(Item, eq(Item.id, FarmOutputs.item_id))
+            .where(eq(FarmOutputs.farm_id, id))
+            .orderBy(Item.name);
+
+        return {
+            ...farm,
+            requirements: farmRequirements,
+            outputs: farmOutputs,
+        };
     } catch (error) {
         console.error("Error fetching farm by ID:", error);
         throw error;
