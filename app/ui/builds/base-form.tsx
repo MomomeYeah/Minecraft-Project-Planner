@@ -16,10 +16,26 @@ import {
     FieldSeparator,
     FieldSet,
 } from "@/components/ui/field"
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { BuildState, RelatedItemFields } from "@/app/lib/actions";
 import FormInput from "@/app/ui/form-input";
 import RelatedItemsForm from "@/app/ui/items/related-items-form";
+
+export function FormSkeleton() {
+    return (
+        <>
+            <Skeleton className="h-4 w-1/6 px-3 py-1 mb-1" />
+            <Skeleton className="h-9 w-full px-3 py-1 mb-4" />
+            
+            <Skeleton className="h-4 w-1/6 px-3 py-1 mb-1" />
+            <Skeleton className="h-9 w-full px-3 py-1 mb-4" />
+            
+            <Skeleton className="h-4 w-1/6 px-3 py-1 mb-1" />
+            <Skeleton className="h-9 w-full px-3 py-1 mb-4" />
+        </>
+    );
+}
 
 type FormProps = {
     initialState: BuildState,

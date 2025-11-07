@@ -300,7 +300,7 @@ export async function deleteFarm(id: string) {
             .where(eq(Farm.id, id));
     });
  
-    revalidatePath('/items');
+    revalidatePath('/farms');
 }
 
 /** Builds */
