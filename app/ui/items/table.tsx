@@ -17,7 +17,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { BuildRequirementFields } from "@/app/lib/actions";
+import { RelatedItemFields } from "@/app/lib/actions";
 
 function ItemTableSkeleton() {
     const iterator = Array.from({ length: 10 }, (_, i) => i);
@@ -68,7 +68,7 @@ function ItemTableData(props: ItemTableDataProps) {
 }
 
 type ItemTableProps = {
-    checked: Array<BuildRequirementFields>,
+    checked: Array<RelatedItemFields>,
     handleItemToggled: (item_id: string, item_name: string, checked: boolean) => void,
 }
 export default function ItemTable(props: ItemTableProps) {
