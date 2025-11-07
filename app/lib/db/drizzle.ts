@@ -4,5 +4,6 @@ import postgres from 'postgres';
 
 config({ path: ".env" });
 
-const client = postgres(process.env.POSTGRES_URL!);
+// as per Supabase Drizzle docs, prepared statements are not supported in "Transaction" pool mode
+const client = postgres(process.env.POSTGRES_URL!, { prepare: false });
 export const db = drizzle(client);

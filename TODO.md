@@ -28,7 +28,6 @@
 # Farms / Builds
 - general purpose loading skeleton for forms and list pages
 - ON DELETE CASCADE
-- behaviour noticed locally for farms only - sometimes on create / edit / delete, server will return successful response but no action committed
 - visual loading indicator on create / edit / delete submit
 - Is there a nice way to define return types for create / update without needing to specify every field?
 - Farms - nicer validation message when no category selected
