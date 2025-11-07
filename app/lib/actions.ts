@@ -12,11 +12,18 @@ import { signIn } from "@/auth";
 import { AuthError } from 'next-auth';
 import { z } from 'zod';
 
-type ZodTreeifiedError = {
+export type ZodTreeifiedError = {
   errors: string[]; // Array of error messages at the current path
   properties?: { [key: string]: ZodTreeifiedError }; // For object schemas
   items?: ZodTreeifiedError[]; // For array schemas
 };
+
+export type RelatedItemFields = {
+    item_id: FormDataEntryValue,
+    item_name: FormDataEntryValue,
+    quantity?: FormDataEntryValue | number | null,
+    quantity_type?: FormDataEntryValue | null,
+}
 
 /** Items */
 
@@ -127,28 +134,21 @@ export async function authenticate(prevState: string | undefined, formData: Form
 
 /** Farms */
 
-export type FarmItemFields = {
-    farm_id?: FormDataEntryValue | null,
-    item_id: FormDataEntryValue,
-    item_name: FormDataEntryValue,
-    quantity?: FormDataEntryValue | number | null,
-    quantity_type?: FormDataEntryValue | null,
-}
 export type FarmFields = {
     name?: FormDataEntryValue | null;
     farm_category_id?: FormDataEntryValue | null;
     time_to_build_mins?: FormDataEntryValue | number | null;
     automation_level?: FormDataEntryValue | null;
     reference_url?: FormDataEntryValue | null;
-    requirements: Array<FarmItemFields>;
-    outputs: Array<FarmItemFields>;
+    requirements: Array<RelatedItemFields>;
+    outputs: Array<RelatedItemFields>;
 }
 export type FarmState = {
     fields: FarmFields,
     errors?: ZodTreeifiedError,
     message?: string | null;
 }
-export async function createFarm(prevState: FarmState, formData: FormData) {
+function parseFarmFormData(formData: FormData): FarmFields {
     const requirement_item_quantities = formData.getAll("requirement_item_quantity");
     const requirement_item_names = formData.getAll("requirement_item_name");
     const requirement_item_quantity_types = formData.getAll("requirement_item_quantity_type");
@@ -169,7 +169,7 @@ export async function createFarm(prevState: FarmState, formData: FormData) {
         quantity_type: output_item_quantity_types[index],
     }));
 
-    const fields = {
+    return {
         farm_category_id: formData.get("farm-category-id"),
         name: formData.get("name"),
         time_to_build_mins: formData.get("time-to-build-mins"),
@@ -178,6 +178,10 @@ export async function createFarm(prevState: FarmState, formData: FormData) {
         requirements: requirements,
         outputs: outputs,
     }
+}
+
+export async function createFarm(prevState: FarmState, formData: FormData) {
+    const fields = parseFarmFormData(formData);
     const validatedFields = SelectFarmSchema.safeParse(fields);
 
     if (! validatedFields.success) {
@@ -192,7 +196,7 @@ export async function createFarm(prevState: FarmState, formData: FormData) {
         await db.transaction(async (tx) => {
             const newFarm = await tx.insert(Farm).values(validatedFields.data).returning();
 
-            for (let i = 0; i < requirements.length; i++) {
+            for (let i = 0; i < fields.requirements.length; i++) {
                 const farmRequirement = {
                     farm_id: newFarm[0].id,
                     ...validatedFields.data.requirements[i],
@@ -203,7 +207,7 @@ export async function createFarm(prevState: FarmState, formData: FormData) {
                     .values(farmRequirement);
             }
 
-            for (let i = 0; i < outputs.length; i++) {
+            for (let i = 0; i < fields.outputs.length; i++) {
                 const farmOutput = {
                     farm_id: newFarm[0].id,
                     ...validatedFields.data.outputs[i],
@@ -214,9 +218,6 @@ export async function createFarm(prevState: FarmState, formData: FormData) {
                     .values(farmOutput);
             }
         });
-
-
-        // await db.insert(Farm).values(validatedFields.data);
     } catch (error) {
         console.error("Error creating farm:", error);
         throw error;
@@ -227,35 +228,7 @@ export async function createFarm(prevState: FarmState, formData: FormData) {
 }
 
 export async function updateFarm(id: string, prevState: FarmState, formData: FormData) {
-    const requirement_item_quantities = formData.getAll("requirement_item_quantity");
-    const requirement_item_names = formData.getAll("requirement_item_name");
-    const requirement_item_quantity_types = formData.getAll("requirement_item_quantity_type");
-    const requirements = formData.getAll("requirement_item_id").map((item_id, index) => ({
-        item_id: item_id,
-        item_name: requirement_item_names[index],
-        quantity: requirement_item_quantities[index],
-        quantity_type: requirement_item_quantity_types[index],
-    }));
-
-    const output_item_quantities = formData.getAll("output_item_quantity");
-    const output_item_names = formData.getAll("output_item_name");
-    const output_item_quantity_types = formData.getAll("output_item_quantity_type");
-    const outputs = formData.getAll("output_item_id").map((item_id, index) => ({
-        item_id: item_id,
-        item_name: output_item_names[index],
-        quantity: output_item_quantities[index],
-        quantity_type: output_item_quantity_types[index],
-    }));
-
-    const fields = {
-        farm_category_id: formData.get("farm-category-id"),
-        name: formData.get("name"),
-        time_to_build_mins: formData.get("time-to-build-mins"),
-        automation_level: formData.get("automation-level"),
-        reference_url: formData.get("reference-url"),
-        requirements: requirements,
-        outputs: outputs,
-    }
+    const fields = parseFarmFormData(formData);
     const validatedFields = SelectFarmSchema.safeParse(fields);
 
     if (! validatedFields.success) {
@@ -277,7 +250,7 @@ export async function updateFarm(id: string, prevState: FarmState, formData: For
                 .delete(FarmRequirements)
                 .where(eq(FarmRequirements.farm_id, id));
 
-            for (let i = 0; i < requirements.length; i++) {
+            for (let i = 0; i < fields.requirements.length; i++) {
                 const farmRequirement = {
                     farm_id: id,
                     ...validatedFields.data.requirements[i],
@@ -292,7 +265,7 @@ export async function updateFarm(id: string, prevState: FarmState, formData: For
                 .delete(FarmOutputs)
                 .where(eq(FarmOutputs.farm_id, id));
 
-            for (let i = 0; i < outputs.length; i++) {
+            for (let i = 0; i < fields.outputs.length; i++) {
                 const farmOutput = {
                     farm_id: id,
                     ...validatedFields.data.outputs[i],
@@ -332,24 +305,17 @@ export async function deleteFarm(id: string) {
 
 /** Builds */
 
-export type BuildRequirementFields = {
-    build_id?: FormDataEntryValue | null,
-    item_id: FormDataEntryValue,
-    item_name: FormDataEntryValue,
-    quantity?: FormDataEntryValue | number | null,
-    quantity_type?: FormDataEntryValue | null,
-}
 export type BuildFields = {
     name?: FormDataEntryValue | null;
     description?: FormDataEntryValue | null;
-    requirements: Array<BuildRequirementFields>;
+    requirements: Array<RelatedItemFields>;
 }
 export type BuildState = {
     fields: BuildFields,
     errors?: ZodTreeifiedError,
     message?: string | null;
 }
-export async function createBuild(prevState: BuildState, formData: FormData) {
+function parseBuildFormData(formData: FormData): BuildFields {
     const item_quantities = formData.getAll("item_quantity");
     const item_names = formData.getAll("item_name");
     const item_quantity_types = formData.getAll("item_quantity_type");
@@ -360,11 +326,15 @@ export async function createBuild(prevState: BuildState, formData: FormData) {
         quantity_type: item_quantity_types[index],
     }));
 
-    const fields = {
+    return {
         name: formData.get("name"),
         description: formData.get("description"),
         requirements: items,
     }
+}
+
+export async function createBuild(prevState: BuildState, formData: FormData) {
+    const fields = parseBuildFormData(formData);
     const validatedFields = SelectBuildSchema.safeParse(fields);
 
     if (! validatedFields.success) {
@@ -379,7 +349,7 @@ export async function createBuild(prevState: BuildState, formData: FormData) {
         await db.transaction(async (tx) => {
             const newBuild = await tx.insert(Build).values(validatedFields.data).returning();
 
-            for (let i = 0; i < items.length; i++) {
+            for (let i = 0; i < fields.requirements.length; i++) {
                 const buildRequirement = {
                     build_id: newBuild[0].id,
                     ...validatedFields.data.requirements[i],
@@ -400,21 +370,7 @@ export async function createBuild(prevState: BuildState, formData: FormData) {
 }
 
 export async function updateBuild(id: string, prevState: BuildState, formData: FormData) {
-    const item_quantities = formData.getAll("item_quantity");
-    const item_names = formData.getAll("item_name");
-    const item_quantity_types = formData.getAll("item_quantity_type");
-    const items = formData.getAll("item_id").map((item_id, index) => ({
-        item_id: item_id,
-        item_name: item_names[index],
-        quantity: item_quantities[index],
-        quantity_type: item_quantity_types[index],
-    }));
-
-    const fields = {
-        name: formData.get("name"),
-        description: formData.get("description"),
-        requirements: items,
-    }
+    const fields = parseBuildFormData(formData);
     const validatedFields = SelectBuildSchema.safeParse(fields);
 
     if (! validatedFields.success) {
@@ -436,7 +392,7 @@ export async function updateBuild(id: string, prevState: BuildState, formData: F
                 .delete(BuildRequirements)
                 .where(eq(BuildRequirements.build_id, id));
 
-            for (let i = 0; i < items.length; i++) {
+            for (let i = 0; i < fields.requirements.length; i++) {
                 const buildRequirement = {
                     build_id: id,
                     ...validatedFields.data.requirements[i],

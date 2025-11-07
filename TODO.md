@@ -26,10 +26,13 @@
 - Build descriptions, what went well, what you're happy with, what to improve, etc.
 
 # Farms / Builds
+- use Promise / React.use functionality for builds as well as for farms
+- general purpose loading skeleton for forms
 - ON DELETE CASCADE
+- behaviour noticed locally for farms only - sometimes on create / edit / delete, server will return successful response but no action committed
+- visual loading indicator on create / edit / delete submit
 - Is there a nice way to define return types for create / update without needing to specify every field?
 - Farms - nicer validation message when no category selected
-- What common functionality can be pulled out? Types? UI templates?
 - UI for linked items - inputs need to be items-start, but label should be items-center
 
 # Forms
