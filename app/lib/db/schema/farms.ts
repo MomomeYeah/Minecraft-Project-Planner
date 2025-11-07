@@ -1,7 +1,7 @@
 import { uuid, integer, text, pgEnum, pgTable } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod"
 import { FarmCategory } from "./farm-categories";
-import { Item, ItemQuantityType } from "./items";
+import { Item, ItemQuantityType, RelatedItemSchemaAdjustments } from "./items";
 import { z } from 'zod';
 
 /** Table definition for a farm requirements - one-to-many between Farns and Items, with associated quantities */
@@ -16,9 +16,7 @@ export const FarmRequirements = pgTable("FarmRequirements", {
 export type SelectFarmRequirements = typeof FarmRequirements.$inferSelect & { "item_name": typeof Item.$inferSelect.name };
 
 /** Validation schema for farm requirements */
-export const SelectFarmRequirementsSchema = createSelectSchema(FarmRequirements, {
-    quantity: () => z.coerce.number({message: "Must be a number"}).gt(0, {message: "Must be greater than zero"}),
-});
+export const SelectFarmRequirementsSchema = createSelectSchema(FarmRequirements, RelatedItemSchemaAdjustments);
 
 /** Table definition for a farm requirements - one-to-many between Farns and Items, with associated quantities */
 export const FarmOutputs = pgTable("FarmOutputs", {
@@ -32,9 +30,7 @@ export const FarmOutputs = pgTable("FarmOutputs", {
 export type SelectFarmOutputs = typeof FarmOutputs.$inferSelect & { "item_name": typeof Item.$inferSelect.name };
 
 /** Validation schema for farm outputs */
-export const SelectFarmOutputsSchema = createSelectSchema(FarmOutputs, {
-    quantity: () => z.coerce.number({message: "Must be a number"}).gt(0, {message: "Must be greater than zero"}),
-});
+export const SelectFarmOutputsSchema = createSelectSchema(FarmOutputs, RelatedItemSchemaAdjustments);
 
 export const FarmAutomationLevel = pgEnum("automation_level", ["Automatic", "Semi-Automatic", "Manual"])
 
@@ -53,6 +49,7 @@ export type SelectFarm = typeof Farm.$inferSelect & {
 };
 
 export const SelectFarmSchema = createSelectSchema(Farm, {
+    farm_category_id: () => z.uuid({message: "Invalid value selected"}),
     name: (schema) => schema.min(1, {message: "Must be between 1 and 100 characters"}).max(100, {message: "Must be between 1 and 100 characters"}),
     time_to_build_mins: () => z.coerce.number({message: "Must be a number"}).gt(0, {message: "Must be greater than zero"}),
     reference_url: () => z.url().or(z.literal(""))

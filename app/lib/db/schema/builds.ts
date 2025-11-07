@@ -1,6 +1,6 @@
 import { uuid, integer, text, pgTable } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod"
-import { Item, ItemQuantityType } from "./items";
+import { Item, ItemQuantityType, RelatedItemSchemaAdjustments } from "./items";
 import { z } from 'zod';
 
 /** Table definition for a build requirements - one-to-many between Builds and Items, with associated quantities */
@@ -15,9 +15,7 @@ export const BuildRequirements = pgTable("BuildRequirements", {
 export type SelectBuildRequirements = typeof BuildRequirements.$inferSelect & { "item_name": typeof Item.$inferSelect.name };
 
 /** Validation schema for build requirements */
-export const SelectBuildRequirementsSchema = createSelectSchema(BuildRequirements, {
-    quantity: () => z.coerce.number({message: "Must be a number"}).gt(0, {message: "Must be greater than zero"}),
-});
+export const SelectBuildRequirementsSchema = createSelectSchema(BuildRequirements, RelatedItemSchemaAdjustments);
 
 /** Table definition for builds */
 export const Build = pgTable("Builds", {

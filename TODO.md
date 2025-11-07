@@ -30,7 +30,6 @@
 - ON DELETE CASCADE
 - visual loading indicator on create / edit / delete submit
 - Is there a nice way to define return types for create / update without needing to specify every field?
-- Farms - nicer validation message when no category selected
 - UI for linked items - inputs need to be items-start, but label should be items-center
 
 # Forms
