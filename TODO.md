@@ -31,6 +31,7 @@
 - visual loading indicator on create / edit / delete submit
 - Is there a nice way to define return types for create / update without needing to specify every field?
 - UI for linked items - inputs need to be items-start, but label should be items-center
+- tie to specific users rather than being global
 
 # Forms
 - Required fields should have indicators
